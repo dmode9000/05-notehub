@@ -22,7 +22,7 @@ export default function NoteList({ notes, isOldData }: NoteListProps) {
   const { mutate, isPending, variables } = useMutation({
     mutationFn: deleteNote,
     onSuccess(note) {
-      toast.success("Note deteted: " + note);
+      toast.success("Note deteted");
       console.log(`Note deteted:`, note);
       queryClient.invalidateQueries({ queryKey: ["notes"] });
     },
