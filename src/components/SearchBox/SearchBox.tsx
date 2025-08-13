@@ -1,6 +1,3 @@
-// Libraries
-import { useDebouncedCallback } from "use-debounce";
-
 // Styles
 import css from "./SearchBox.module.css";
 

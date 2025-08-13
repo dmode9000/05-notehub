@@ -1,6 +1,6 @@
 // Libraries
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 // Services
 import { deleteNote } from "../../services/noteService";
