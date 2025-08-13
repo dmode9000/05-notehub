@@ -10,7 +10,7 @@ import * as Yup from "yup";
 import { createNote } from "../../services/noteService";
 
 // Types
-import type { Tag } from "../../types/note";
+import { noteTags, type Tag } from "../../types/note";
 
 // Styles
 import css from "./NoteForm.module.css";
@@ -24,8 +24,14 @@ interface NoteFormValues {
 const initialValues: NoteFormValues = { title: "", content: "", tag: "Todo" };
 
 const validationSchema = Yup.object().shape({
-  title: Yup.string().required("Required"),
-  content: Yup.string().required("Required"),
+  title: Yup.string()
+    .required("Required")
+    .min(3, "Title is too short(min 3)")
+    .max(50, "Name is too long (max 50)"),
+  content: Yup.string().max(500, "Content is too long (max 500)"),
+  tag: Yup.string()
+    .oneOf([...noteTags], "Invalid tag")
+    .required("Required"),
 });
 
 interface NoteFormProps {
@@ -42,8 +48,8 @@ export default function NoteForm({ closeFormModal }: NoteFormProps) {
       toast.success("Note created.");
       closeFormModal();
     },
-    onError(error) {
-      console.error("Erorr creating note:", error);
+    onError(Error) {
+      console.error("Erorr creating note:", Error);
     },
   });
 
@@ -81,11 +87,11 @@ export default function NoteForm({ closeFormModal }: NoteFormProps) {
         <fieldset className={css.formGroup}>
           <label htmlFor={`${fieldId}-tag`}>Tag</label>
           <Field as="select" className={css.select} name="tag" id={`${fieldId}-tag`}>
-            <option value="Todo">Todo</option>
-            <option value="Work">Work</option>
-            <option value="Personal">Personal</option>
-            <option value="Meeting">Meeting</option>
-            <option value="Shopping">Shopping</option>
+            {noteTags.map((tag) => (
+              <option key={tag} value={tag}>
+                {tag}
+              </option>
+            ))}
           </Field>
           <ErrorMessage name="tag" component="span" className={css.error} />
         </fieldset>
@@ -100,23 +106,4 @@ export default function NoteForm({ closeFormModal }: NoteFormProps) {
       </Form>
     </Formik>
   );
-}
-
-{
-  /* <form className={css.form}>
-
-
-  <div className={css.actions}>
-    <button type="button" className={css.cancelButton}>
-      Cancel
-    </button>
-    <button
-      type="submit"
-      className={css.submitButton}
-      disabled=false
-    >
-      Create note
-    </button>
-  </div>
-</form> */
 }

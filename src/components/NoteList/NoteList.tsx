@@ -12,17 +12,16 @@ import type { Note, Tag } from "../../types/note";
 import css from "./NoteList.module.css";
 
 interface NoteListProps {
-  data: Note[];
-  onTagClick: (tag: Tag) => void;
+  notes: Note[];
+  isOldData?: boolean;
 }
 
-export default function NoteList({ data, onTagClick }: NoteListProps) {
+export default function NoteList({ notes, isOldData }: NoteListProps) {
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
+  const { mutate, isPending, variables } = useMutation({
     mutationFn: deleteNote,
     onSuccess(note) {
-      // TODO додати тост повідомлення про видалену нотатку
       toast.success("Note deteted: " + note);
       console.log(`Note deteted:`, note);
       queryClient.invalidateQueries({ queryKey: ["notes"] });
@@ -33,24 +32,22 @@ export default function NoteList({ data, onTagClick }: NoteListProps) {
   });
 
   return (
-    <ul className={css.list}>
-      {
-        /* Набір елементів списку нотатків */
-        data.map((note) => (
-          <li className={css.listItem} key={note.id}>
+    <ul className={isOldData ? `${css.list} ${css.oldData}` : css.list}>
+      {notes.map((note) => {
+        const isDeleting = isPending && variables === note.id;
+        return (
+          <li className={`${css.listItem} ${isDeleting ? css.oldData : ""}`} key={note.id}>
             <h2 className={css.title}>{note.title}</h2>
             <p className={css.content}>{note.content}</p>
             <div className={css.footer}>
-              <span className={css.tag} onClick={() => onTagClick(note.tag)}>
-                {note.tag}
-              </span>
+              <span className={css.tag}>{note.tag}</span>
               <button className={css.button} onClick={() => mutate(note.id)}>
                 Delete
               </button>
             </div>
           </li>
-        ))
-      }
+        );
+      })}
     </ul>
   );
 }

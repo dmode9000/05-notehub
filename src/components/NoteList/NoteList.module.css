@@ -74,5 +74,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: pointer;
+}
+
+.oldData {
+  opacity: 0.5;
+  pointer-events: none;
+  transition: opacity 200ms ease-in-out;
 }

@@ -2,10 +2,10 @@
 import { useCallback, useEffect, useState } from "react";
 
 // Libraries
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { GridLoader } from "react-spinners";
 import { useDebouncedCallback } from "use-debounce";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 // Services
 import { fetchNotes } from "../../services/noteService";
@@ -17,15 +17,11 @@ import NoteForm from "../NoteForm/NoteForm";
 import Pagination from "../Pagination/Pagination";
 import SearchBox from "../SearchBox/SearchBox";
 
-// Types
-import type { Tag } from "../../types/note";
-
 // Styles
 import css from "./App.module.css";
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTag, setSelectedTag] = useState<string | undefined>(undefined);
   const [selectedPage, setSelectedPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -34,21 +30,14 @@ function App() {
     setSelectedPage(1);
   }, 500);
 
-  const { data, isLoading, isSuccess } = useQuery({
-    queryKey: ["notes", selectedTag, selectedPage, searchQuery],
-    queryFn: () => fetchNotes({ tag: selectedTag, page: selectedPage, search: searchQuery }),
-  });
-
-  useEffect(() => {
-    console.log(data);
+  const { data, isLoading, isSuccess, isPlaceholderData } = useQuery({
+    queryKey: ["notes", selectedPage, searchQuery],
+    queryFn: () => fetchNotes({ page: selectedPage, search: searchQuery }),
+    placeholderData: keepPreviousData,
   });
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-  }, []);
-
-  const handleTagSelect = useCallback((tag: Tag) => {
-    setSelectedTag((prevTag) => (prevTag === tag ? undefined : tag));
   }, []);
 
   return (
@@ -76,7 +65,8 @@ function App() {
         )}
       </header>
       {isLoading && <GridLoader cssOverride={{ marginInline: "auto", display: "block" }} />}
-      {data?.notes && <NoteList data={data?.notes} onTagClick={handleTagSelect} />}
+
+      {data?.notes && <NoteList notes={data.notes} isOldData={isPlaceholderData} />}
     </div>
   );
 }
