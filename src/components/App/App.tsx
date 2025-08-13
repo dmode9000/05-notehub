@@ -1,11 +1,11 @@
 // React
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 // Libraries
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { GridLoader } from "react-spinners";
 import { useDebouncedCallback } from "use-debounce";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 // Services
 import { fetchNotes } from "../../services/noteService";

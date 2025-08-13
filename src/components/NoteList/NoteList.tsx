@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { deleteNote } from "../../services/noteService";
 
 // Types
-import type { Note, Tag } from "../../types/note";
+import type { Note } from "../../types/note";
 
 // Styles
 import css from "./NoteList.module.css";
